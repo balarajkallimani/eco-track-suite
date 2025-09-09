@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Recycle, Leaf, BarChart3, Shield, Award, Users } from "lucide-react";
+import { Recycle, Leaf, BarChart3, Shield, Award, Users, Database } from "lucide-react";
 import { Link } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import heroImage from "@/assets/hero-waste-management.jpg";
 
 const features = [
@@ -38,6 +40,29 @@ const features = [
 ];
 
 export default function Home() {
+  const { toast } = useToast();
+
+  const testConnection = async () => {
+    try {
+      // Test connection by checking auth status
+      const { data, error } = await supabase.auth.getSession();
+      
+      console.log('Connection test - Auth session check:', { data, error });
+      
+      toast({
+        title: "✅ Connection Successful!",
+        description: "Supabase backend is connected and working perfectly!",
+      });
+    } catch (err) {
+      console.error('Connection test error:', err);
+      toast({
+        title: "Connection Failed",
+        description: "Could not connect to Supabase backend",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-0">
       {/* Hero Section */}
@@ -70,6 +95,15 @@ export default function Home() {
                 Learn More
               </Button>
             </Link>
+            <Button 
+              onClick={testConnection}
+              size="lg" 
+              variant="outline" 
+              className="text-lg px-8 py-6 border-white text-white hover:bg-white hover:text-primary"
+            >
+              <Database className="w-5 h-5 mr-2" />
+              Test Backend
+            </Button>
           </div>
         </div>
       </section>
